@@ -26,6 +26,7 @@ func TestTransferTx(t *testing.T) {
 			errs <- err
 		}()
 	}
+	seen := make(map[int]bool)
 	for i := 0; i < numOfConcurrentTx; i++ {
 		result := <-results
 		err := <-errs
@@ -60,5 +61,33 @@ func TestTransferTx(t *testing.T) {
 		require.NotZero(t, toEntry.CreatedAt)
 		_, err = store.GetEntry(context.Background(), toEntry.ID)
 		require.NoError(t, err)
+
+		fromAccount := result.FromAccount
+		require.NotEmpty(t, fromAccount)
+		require.Equal(t, firstAccount.ID, fromAccount.ID)
+
+		toAccount := result.ToAccount
+		require.NotEmpty(t, toAccount)
+		require.Equal(t, secondAccount.ID, toAccount.ID)
+
+		firstDiff := firstAccount.Balance - fromAccount.Balance
+		secondDiff := toAccount.Balance - secondAccount.Balance
+		require.Equal(t, firstDiff, secondDiff)
+		require.True(t, firstDiff > 0)
+		require.True(t, firstDiff%transferAmount == 0)
+
+		numOfTransactions := int(firstDiff / transferAmount)
+		require.True(t, 1 <= numOfTransactions && numOfTransactions <= numOfConcurrentTx)
+		require.NotContains(t, seen, numOfTransactions)
+		seen[numOfTransactions] = true
 	}
+
+	firstUpdatedAccount, err := store.GetAccount(context.Background(), firstAccount.ID)
+	require.NoError(t, err)
+
+	secondUpdatedAccount, err := store.GetAccount(context.Background(), secondAccount.ID)
+	require.NoError(t, err)
+
+	require.Equal(t, firstUpdatedAccount.Balance+int64(numOfConcurrentTx)*transferAmount, firstAccount.Balance)
+	require.Equal(t, secondUpdatedAccount.Balance-int64(numOfConcurrentTx)*transferAmount, secondAccount.Balance)
 }
