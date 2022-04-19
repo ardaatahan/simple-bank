@@ -14,12 +14,10 @@ func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {
 		log.Fatal("cannot load environment variables: ", err)
-		return
 	}
 	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
-		return
 	}
 	store := db.NewStore(conn)
 	server := api.NewServer(store)
