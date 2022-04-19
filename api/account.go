@@ -1,4 +1,4 @@
-package db
+package api
 
 import (
 	"database/sql"
@@ -34,7 +34,7 @@ func (server *Server) createAccount(ctx *gin.Context) {
 }
 
 type getAccountRequest struct {
-	ID int64 `json:"id" binding:"required,min=1"`
+	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
 func (server *Server) getAccount(ctx *gin.Context) {
@@ -102,7 +102,7 @@ func (server *Server) updateAccount(ctx *gin.Context) {
 }
 
 type deleteAccountRequest struct {
-	ID int64 `json:"id" binding:"required,min=1"`
+	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
 func (server *Server) deleteAccount(ctx *gin.Context) {

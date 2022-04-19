@@ -1,4 +1,4 @@
-package db
+package api
 
 import (
 	db "github.com/ardaatahan/simplebank/db/sqlc"
@@ -19,7 +19,7 @@ func NewServer(store db.Store) *Server {
 
 	router.GET("/accounts/:id", server.getAccount)
 	router.PUT("/accounts/:id", server.updateAccount)
-	router.DELETE("accounts/:id", server.deleteAccount)
+	router.DELETE("/accounts/:id", server.deleteAccount)
 
 	server.router = router
 	return &server
