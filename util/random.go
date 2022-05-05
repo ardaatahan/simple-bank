@@ -20,7 +20,7 @@ func RandomInt(min, max int64) int64 {
 func RandomString(n int) string {
 	var randomStringBuilder strings.Builder
 	alphabetLength := len(alphabet)
-	for i := 0; i < len(alphabet); i++ {
+	for i := 0; i < n; i++ {
 		randomStringBuilder.WriteByte(alphabet[rand.Intn(alphabetLength)])
 	}
 	return randomStringBuilder.String()
